@@ -1,5 +1,5 @@
 {
-    "name": "Helpers",
+    "name": "Settings",
     "description": "Laravel helper functions for use in everywhere on a project",
     "version": "1"
 }
