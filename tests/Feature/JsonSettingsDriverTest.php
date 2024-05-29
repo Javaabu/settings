@@ -6,6 +6,14 @@ use Javaabu\Settings\Tests\TestCase;
 
 class JsonSettingsDriverTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->app['config']->set('settings.store', 'json');
+        $this->app['config']->set('settings.defaults.foo', 'bar');
+    }
+
     /** @test */
     public function it_can_get_app_name_setting()
     {

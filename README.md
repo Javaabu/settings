@@ -1,8 +1,7 @@
 # javaabu/settings
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/settings.svg?style=flat-square)](https://packagist.org/packages/javaabu/settings)
-[![Build Status](https://img.shields.io/travis/javaabu/settings/master.svg?style=flat-square)](https://travis-ci.org/javaabu/settings)
-[![Quality Score](https://img.shields.io/scrutinizer/g/javaabu/settings.svg?style=flat-square)](https://scrutinizer-ci.com/g/javaabu/settings)
+[![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/javaabu/settings.svg?style=flat-square)](https://packagist.org/packages/javaabu/settings)
 
 Laravel helper functions that aide in development.

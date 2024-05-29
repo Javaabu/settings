@@ -4,6 +4,7 @@ namespace Javaabu\Settings;
 
 use Illuminate\Support\ServiceProvider;
 use anlutro\LaravelSettings\ServiceProvider as AluntroSettingsServiceProvider;
+use Javaabu\Settings\Providers\EventServiceProvider;
 
 class SettingsServiceProvider extends ServiceProvider
 {
@@ -27,10 +28,11 @@ class SettingsServiceProvider extends ServiceProvider
     {
         // merge package config with user defined config
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'settings');
-        $this->mergeConfigFrom(__DIR__ . '/../config/defaults.php', 'defaults');
 
         // Load the original settings package
         $this->app->register(AluntroSettingsServiceProvider::class);
+
+        $this->app->register(EventServiceProvider::class);
 
         // Require helpers defined on the package.
         require_once __DIR__ . '/helpers/helpers.php';
