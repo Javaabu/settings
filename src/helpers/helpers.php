@@ -54,7 +54,7 @@ if (! function_exists('set_file_setting')) {
             reset_file_setting($key);
             return true;
         }
-        
+
         return false;
     }
 }
