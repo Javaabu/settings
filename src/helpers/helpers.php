@@ -50,7 +50,11 @@ if (! function_exists('set_file_setting')) {
             RequestFacade::file($key)->move($path, $file_name); // uploading file to given path
             Setting::set($key, $path.'/'.$file_name);
             return true;
+        } elseif (RequestFacade::exists($key)) {
+            reset_file_setting($key);
+            return true;
         }
+        
         return false;
     }
 }
