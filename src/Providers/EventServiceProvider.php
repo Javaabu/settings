@@ -8,6 +8,10 @@ use Javaabu\Settings\Listeners\LogSettingsUpdate;
 
 class EventServiceProvider extends ServiceProvider
 {
+    protected function configureEmailVerification(){
+        // fix for Registered Event listener getting registered multiple times
+        // see https://github.com/laravel/framework/issues/50783#issuecomment-2072411615
+    }
     protected $listen = [
         SettingsUpdated::class => [
             LogSettingsUpdate::class,
