@@ -16,8 +16,8 @@ class SettingsServiceProvider extends ServiceProvider
         // declare publishes
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('settings.php'),
-            ], 'settings-config');
+                __DIR__ . '/../config/defaults.php' => config_path('defaults.php'),
+            ], 'settings-defaults');
         }
     }
 
@@ -26,9 +26,6 @@ class SettingsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // merge package config with user defined config
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'settings');
-
         // Load the original settings package
         $this->app->register(AluntroSettingsServiceProvider::class);
 
