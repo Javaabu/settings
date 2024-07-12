@@ -14,7 +14,7 @@ This package provides a trait called `FakesSettings` for faking settings and def
 The trait provides the following methods:
 
 - **`setFakeDefaultSetting(string $setting, $value)`**: Fake a setting default to a given value
-- **`setFakeSetting(string $setting, $value, $default = null, bool $use_value_as_default_if_null = true)`**: Fake a setting to a given value and optionally set a default to the given setting. If a default is not provided, it would be set to the given setting value. To use a `null` value as a default, set `$use_value_as_default_if_null` to `false`. Note that when you need to set both a default and a setting to the same setting key, you should call this method with a default instead of calling the `setFakeDefaultSetting` method separately.
+- **`setFakeSetting(string $setting, $value, $default = null)`**: Fake a setting to a given value and optionally set a default to the given setting. If a default is not provided, it would be set to `null`. Note that when you need to set both a default and a setting to the same setting key, you should call this method with a default instead of calling the `setFakeDefaultSetting` method separately.
 
 You can use the trait in your tests like so.
 

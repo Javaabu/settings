@@ -20,7 +20,7 @@ class FakesSettingsTest extends TestCase
     /** @test */
     public function it_can_fake_a_setting_with_null_default()
     {
-        $this->setFakeSetting('app_name', 'fake name', null, false);
+        $this->setFakeSetting('app_name', 'fake name', null);
 
         $this->assertNull(default_setting('app_name'));
         $this->assertEquals('fake name', get_setting('app_name'));
@@ -31,7 +31,7 @@ class FakesSettingsTest extends TestCase
     {
         $this->setFakeSetting('app_name', 'fake name');
 
-        $this->assertEquals('fake name', default_setting('app_name'));
+        $this->assertNull(default_setting('app_name'));
         $this->assertEquals('fake name', get_setting('app_name'));
     }
 
