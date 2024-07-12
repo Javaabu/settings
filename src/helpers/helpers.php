@@ -17,7 +17,7 @@ if (! function_exists('default_setting')) {
     function default_setting(string $key): mixed
     {
         $default = config('defaults.'.$key);
-        return is_null($default) ? '' : $default;
+        return $default;
     }
 }
 
