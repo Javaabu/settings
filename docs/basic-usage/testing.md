@@ -16,6 +16,8 @@ The trait provides the following methods:
 - **`setFakeDefaultSetting(string $setting, $value)`**: Fake a setting default to a given value
 - **`setFakeSetting(string $setting, $value, $default = null)`**: Fake a setting to a given value and optionally set a default to the given setting. If a default is not provided, it would be set to `null`. Note that when you need to set both a default and a setting to the same setting key, you should call this method with a default instead of calling the `setFakeDefaultSetting` method separately.
 
+When faking settings, for settings that are not faked, it will return the default value for those settings.
+
 You can use the trait in your tests like so.
 
 ```php

@@ -43,4 +43,17 @@ class FakesSettingsTest extends TestCase
         $this->assertEquals('default name', default_setting('app_name'));
         $this->assertEquals('fake name', get_setting('app_name'));
     }
+
+    /** @test */
+    public function it_can_handle_real_settings_along_with_fake_settings()
+    {
+        $this->app['config']->set('defaults.app_name', 'Actual Name');
+
+        $this->setFakeSetting('max_size', 20);
+        $this->setFakeSetting('max_limit', 23);
+
+        $this->assertEquals(20, get_setting('max_size'));
+        $this->assertEquals('Actual Name', get_setting('app_name'));
+        $this->assertEquals(23, get_setting('max_limit'));
+    }
 }

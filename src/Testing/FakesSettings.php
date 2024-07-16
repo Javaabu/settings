@@ -6,6 +6,7 @@ use anlutro\LaravelSettings\Facades\Setting;
 
 trait FakesSettings
 {
+    protected array $fake_settings = [];
     /**
      * Fake a setting default
      */
@@ -21,8 +22,19 @@ trait FakesSettings
     {
         $this->app['config']->set('defaults.' . $setting, $default);
 
-        Setting::shouldReceive('get')
-            ->with($setting, $default)
-            ->andReturn($value);
+        // mock only once
+        if (empty($this->fake_settings)) {
+            Setting::shouldReceive('get')
+                ->andReturnUsing(function ($key) {
+                    if (array_key_exists($key, $this->fake_settings)) {
+                        return $this->fake_settings[$key];
+                    }
+
+                    return default_setting($key);
+                });
+        }
+
+        // register the fake setting
+        $this->fake_settings[$setting] = $value;
     }
 }

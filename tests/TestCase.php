@@ -30,6 +30,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
+            \anlutro\LaravelSettings\ServiceProvider::class,
             SettingsServiceProvider::class,
             ActivitylogServiceProvider::class
         ];
