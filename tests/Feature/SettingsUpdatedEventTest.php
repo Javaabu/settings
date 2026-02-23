@@ -11,8 +11,7 @@ class SettingsUpdatedEventTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_logs_that_settings_have_been_updated()
+    public function test_it_logs_that_settings_have_been_updated()
     {
         event(new SettingsUpdated(
             ['name' => 'foo', 'title' => 'bar'],
