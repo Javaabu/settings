@@ -14,8 +14,7 @@ class JsonSettingsDriverTest extends TestCase
         $this->app['config']->set('settings.defaults.foo', 'bar');
     }
 
-    /** @test */
-    public function it_can_get_app_name_setting()
+    public function test_it_can_get_app_name_setting()
     {
         $this->assertEquals('Laravel', get_setting('app_name'));
         $this->assertEquals('img/logo.png', get_setting('app_logo'));

@@ -9,16 +9,14 @@ class FakesSettingsTest extends TestCase
 {
     use FakesSettings;
 
-    /** @test */
-    public function it_can_fake_a_default_setting()
+    public function test_it_can_fake_a_default_setting()
     {
         $this->setFakeDefaultSetting('daily_limit', 20);
 
         $this->assertEquals(20, default_setting('daily_limit'));
     }
 
-    /** @test */
-    public function it_can_fake_a_setting_with_null_default()
+    public function test_it_can_fake_a_setting_with_null_default()
     {
         $this->setFakeSetting('app_name', 'fake name', null);
 
@@ -26,8 +24,7 @@ class FakesSettingsTest extends TestCase
         $this->assertEquals('fake name', get_setting('app_name'));
     }
 
-    /** @test */
-    public function it_can_fake_a_setting()
+    public function test_it_can_fake_a_setting()
     {
         $this->setFakeSetting('app_name', 'fake name');
 
@@ -35,8 +32,7 @@ class FakesSettingsTest extends TestCase
         $this->assertEquals('fake name', get_setting('app_name'));
     }
 
-    /** @test */
-    public function it_can_fake_a_setting_with_a_default()
+    public function test_it_can_fake_a_setting_with_a_default()
     {
         $this->setFakeSetting('app_name', 'fake name', 'default name');
 
@@ -44,8 +40,7 @@ class FakesSettingsTest extends TestCase
         $this->assertEquals('fake name', get_setting('app_name'));
     }
 
-    /** @test */
-    public function it_can_handle_real_settings_along_with_fake_settings()
+    public function test_it_can_handle_real_settings_along_with_fake_settings()
     {
         $this->app['config']->set('defaults.app_name', 'Actual Name');
 
