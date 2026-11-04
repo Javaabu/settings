@@ -1,0 +1,12 @@
+# For `vendor/bin/testbench`: the queue worker the refresh tests start in its own process
+providers:
+  - Spatie\Permission\PermissionServiceProvider
+  - Javaabu\Permissions\PermissionsServiceProvider
+  - Javaabu\Manifest\ManifestServiceProvider
+  - Javaabu\Forms\FormsServiceProvider
+  - Javaabu\Stencil\StencilServiceProvider
+  - Javaabu\Settings\SettingsServiceProvider
+
+env:
+  - APP_KEY="base64:yWa/ByhLC/GUvfToOuaPD7zDwB64qkc/QkaQOrT5IpE="
+  - SETTINGS_STORE=database
