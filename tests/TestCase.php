@@ -14,6 +14,7 @@ use Javaabu\Settings\Tests\TestSupport\Models\Admin;
 use Javaabu\Settings\Tests\TestSupport\Models\User;
 use Javaabu\Settings\Tests\TestSupport\Providers\TestServiceProvider;
 use Javaabu\Stencil\StencilServiceProvider;
+use Javaabu\Translatable\TranslatableServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Spatie\Activitylog\ActivitylogServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
@@ -54,6 +55,10 @@ abstract class TestCase extends BaseTestCase
 
         if (class_exists(ActivitylogServiceProvider::class)) {
             $providers[] = ActivitylogServiceProvider::class;
+        }
+
+        if (class_exists(TranslatableServiceProvider::class)) {
+            $providers[] = TranslatableServiceProvider::class;
         }
 
         return $providers;

@@ -8,9 +8,12 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Javaabu\Settings\Definitions\Setting;
 use Javaabu\Settings\Definitions\SettingsPage;
 use Javaabu\Settings\SettingsRegistry;
 use Javaabu\Settings\SettingsRepository;
+use Javaabu\Settings\Support\Translatable\SettingsRecord;
+use Javaabu\Settings\Support\Translations;
 use Javaabu\Stencil\Form;
 
 /**
@@ -37,7 +40,7 @@ class SettingsForm extends Form
             'guard' => $guard,
         ]);
 
-        return $form->model($form->currentValues());
+        return $form->model($form->initialRecord());
     }
 
     protected function setUp(): void
@@ -71,8 +74,35 @@ class SettingsForm extends Form
     }
 
     /**
+     * What the form edits: the current values, or (when javaabu/translatable is
+     * enabled and the page has translatable settings) a record that holds every
+     * locale's value
+     *
+     * @return array<string, mixed>|SettingsRecord
+     */
+    public function initialRecord(): array|SettingsRecord
+    {
+        $values = $this->currentValues();
+
+        $translatable = array_filter($this->page()->settings(), fn (Setting $setting) => $setting->isTranslatable());
+
+        if ($translatable === []) {
+            return $values;
+        }
+
+        $settings = app(SettingsRepository::class);
+
+        foreach (array_keys($translatable) as $key) {
+            $values[$key] = $settings->translations($key);
+        }
+
+        return SettingsRecord::fromValues($values);
+    }
+
+    /**
      * The values the form starts with. Encrypted settings are left empty, so
      * they never reach the browser; file settings are their URLs, for previews.
+     * Translatable settings also have a value per locale ({key}_{locale}).
      *
      * @return array<string, mixed>
      */
@@ -88,6 +118,16 @@ class SettingsForm extends Form
                 $setting->isFile() && ! is_array($settings->get($key)) => $settings->url($key),
                 default => $settings->get($key),
             };
+
+            if (! $setting->isTranslatable()) {
+                continue;
+            }
+
+            $translations = $settings->translations($key);
+
+            foreach (Translations::locales() as $locale) {
+                $values["{$key}_{$locale}"] = $translations[$locale] ?? null;
+            }
         }
 
         return $values;
@@ -110,6 +150,16 @@ class SettingsForm extends Form
         $replaced_files = [];
 
         foreach ($this->page()->settings() as $key => $setting) {
+            if ($setting->isTranslatable()) {
+                $translations = $this->translationsFrom($data, $key);
+
+                if ($translations !== []) {
+                    $values[$key] = array_merge($settings->translations($key), $translations);
+                }
+
+                continue;
+            }
+
             if (! Arr::has($data, $key)) {
                 continue;
             }
@@ -132,6 +182,27 @@ class SettingsForm extends Form
         $this->deleteFiles($replaced_files, $values);
 
         return $values;
+    }
+
+    /**
+     * The submitted value of each locale of a translatable setting
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function translationsFrom(array $data, string $key): array
+    {
+        $translations = [];
+
+        foreach (Translations::locales() as $locale) {
+            $name = "{$key}_{$locale}";
+
+            if (array_key_exists($name, $data)) {
+                $translations[$locale] = $data[$name];
+            }
+        }
+
+        return $translations;
     }
 
     /**

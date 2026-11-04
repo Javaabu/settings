@@ -45,6 +45,9 @@ class Setting
 
     protected bool $is_translatable = false;
 
+    /** @var array{layout: string, require_all: bool} */
+    protected array $translatable_options = ['layout' => 'tabs', 'require_all' => false];
+
     protected bool $is_encrypted = false;
 
     protected string|false|null $field_cast = null;
@@ -121,7 +124,7 @@ class Setting
         }
 
         if ($this->is_translatable) {
-            $field->translatable();
+            $field->translatable(true, ...$this->translatable_options);
         }
 
         return $field;
@@ -158,10 +161,14 @@ class Setting
     /**
      * One value per language, when javaabu/translatable is installed and
      * enabled. Otherwise a plain setting.
+     *
+     * @param  string  $layout  tabs, or stacked for one input after another
+     * @param  bool  $require_all  required in every language, not only the default one
      */
-    public function translatable(bool $condition = true): static
+    public function translatable(bool $condition = true, string $layout = 'tabs', bool $require_all = false): static
     {
         $this->is_translatable = $condition;
+        $this->translatable_options = ['layout' => $layout, 'require_all' => $require_all];
 
         return $this;
     }
