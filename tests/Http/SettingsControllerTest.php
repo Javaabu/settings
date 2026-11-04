@@ -63,6 +63,12 @@ class SettingsControllerTest extends TestCase
             ->assertRedirect('/settings/general')
             ->assertSessionHas('status', 'Settings saved.');
 
+        $this->app->setLocale('dv');
+
+        $this->actingAs($this->user())
+            ->patch('/settings/general', $this->validInput())
+            ->assertSessionHas('status', 'ސެޓިންގްސް ސޭވްކުރެވިއްޖެ.');
+
         $settings = $this->freshSettings();
 
         $this->assertEquals('ދިވެހިރާއްޖެ', $settings->get('site_name'));
@@ -188,7 +194,9 @@ class SettingsControllerTest extends TestCase
         $this->actingAs($this->user())
             ->get('/settings/general')
             ->assertOk()
-            ->assertSee('dir="rtl"', false);
+            ->assertSee('dir="rtl"', false)
+            ->assertSee('<h1 class="text-2xl font-semibold">ސެޓިންގްސް</h1>', false)
+            ->assertSee('ސެޓިންގްސް ސޭވްކުރޭ');
     }
 
     #[Test]

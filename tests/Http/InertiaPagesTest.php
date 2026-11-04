@@ -105,7 +105,9 @@ class InertiaPagesTest extends TestCase
         $this->actingAs($this->user())
             ->get('/settings/general')
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->where('strings.title', __('Settings'))
+                ->where('strings.title', 'ސެޓިންގްސް')
+                ->where('strings.read_only', 'ތިބާއަށް މި ސެޓިންގްސް ބެލޭނެ، ނަމަވެސް ބަދަލެއް ނުކުރެވޭނެ.')
+                ->where('form.submit', 'ސެޓިންގްސް ސޭވްކުރޭ')
                 ->etc());
     }
 }
