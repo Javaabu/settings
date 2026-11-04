@@ -89,9 +89,9 @@ jobs:
                     extensions: curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, iconv
                     coverage: none
 
-            -   name: Install dependencies without activitylog and Inertia
+            -   name: Install dependencies without activitylog, Inertia and translatable
                 run: |
-                    composer remove --dev spatie/laravel-activitylog inertiajs/inertia-laravel --no-interaction --no-update
+                    composer remove --dev spatie/laravel-activitylog inertiajs/inertia-laravel javaabu/translatable --no-interaction --no-update
                     composer update --prefer-dist --no-interaction --no-progress
 
             -   name: Execute tests

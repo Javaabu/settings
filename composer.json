@@ -65,6 +65,7 @@
     "require-dev": {
         "inertiajs/inertia-laravel": "^2.0",
         "javaabu/boost-javaabu-guidelines": "^1.4",
+        "javaabu/translatable": "^3.0@dev",
         "laravel/pint": "^1.24",
         "orchestra/testbench": "^10.0 || ^11.0",
         "phpunit/phpunit": "^11.5.3 || ^12.5.8",
