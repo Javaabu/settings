@@ -7,17 +7,37 @@
 
 Settings for Laravel, defined once with [javaabu/stencil](https://github.com/Javaabu/stencil): the field, its default and its validation in one place.
 
+- Settings pages for free: `Route::settings()` gives every page a form, validation, saving and a page in Blade or Inertia React.
+- Typed values (integers, booleans, arrays, enums), encrypted secrets and file uploads.
+- Cached, and picked up by queue workers and Octane without a restart.
+- A policy and permissions through [javaabu/permissions](https://github.com/Javaabu/permissions), for any guard and user model.
+- Dhivehi and RTL; translatable settings with [javaabu/translatable](https://github.com/Javaabu/translatable).
+
 ```php
 use Javaabu\Settings\Definitions\Setting;
+use Javaabu\Settings\Definitions\SettingsPage;
 
-Setting::make('site_name')->default(config('app.name'))->required()->maxLength(255);
+class GeneralSettings extends SettingsPage
+{
+    public function definition(): array
+    {
+        return [
+            Setting::make('site_name')->default(config('app.name'))->label(__('Site name'))->required()->maxLength(255)->thaana(),
+            Setting::make('per_page')->default(20)->label(__('Items per page'))->integer()->minValue(1),
+        ];
+    }
+}
 ```
 
 ```php
+Route::settings();                       // /settings/general, for users with edit_settings
+
 settings('site_name');
 settings()->integer('per_page');
-settings(['site_name' => 'ދިވެހިރާއްޖެ']);
+Settings::set(['site_name' => 'ދިވެހިރާއްޖެ']);
 ```
+
+Coming from v1? `get_setting()` still works; see [Upgrading](docs/upgrading.md).
 
 ## Documentation
 

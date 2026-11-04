@@ -1,0 +1,44 @@
+# javaabu/settings
+
+> Settings for Laravel, defined once with javaabu/stencil: a setting's key, default, input and validation in one place (Setting::make('per_page')->default(20)->integer()). Settings are grouped into pages and sections; Route::settings() gives each page a form, validation, saving and a page in Blade (javaabu/forms) or Inertia React (@javaabu/forms, shipped through javaabu/manifest). Values are typed, cached, and reloaded by queue workers and Octane when they change. A policy and permissions come from javaabu/permissions; translatable settings from javaabu/translatable; an activity log from spatie/laravel-activitylog.
+
+Paths are relative to this file. In a project, that's vendor/javaabu/settings/.
+
+## Rules
+
+- Define every setting with `Javaabu\Settings\Definitions\Setting::make('key')`, on a `SettingsPage` class (`definition()`), an inline page (`Settings::page('mail')->schema(fn () => [...])`) or with `Settings::define([...])` for settings without a page. Don't add new keys to `config/defaults.php`; that's the v1 fallback.
+- Put the default, the field and the validation on the setting: `->default(20)->field(TextInput::class)->integer()->minValue(1)->required()`. Methods the setting doesn't have go to the stencil field. Never validate settings in a controller.
+- Read with `settings('key')` (or `Settings::get()`, or v1's `get_setting()`); use the typed getters (`settings()->integer('per_page')`, `string()`, `boolean()`, `float()`, `array()`) where the type matters. Don't cast by hand: values come back as the field's type, enums with `->cast(Enum::class)`.
+- Write with `Settings::set([...])` (saved straight away, no `save()`). Don't write to the `settings` table or the cache directly: writes bump the version that workers check.
+- Register the settings routes yourself with `Route::settings([...])` in the app's route group; pass `guard`, `prefix` and `name` for an admin portal. They aren't loaded automatically. Add `Route::stencil()` once if a setting uses `->live()`.
+- Permissions are `view_settings` and `edit_settings`, plus each page's own `$permission`. Run `php artisan permissions:sync`. Override the policy with `config('permissions.policies')` or `Gate::policy(SettingsPage::class, ...)`.
+- Secrets: `->encrypted()`. They're never sent to the browser; an empty input keeps the value. Don't add `required()` to them.
+- Files: `->field(ImageUpload::class)` stores a path on `config('settings.disk')`; show it with `settings()->url('logo')`.
+- Use a cache store every process shares (Redis, database, file) when running queue workers or Octane; never tell users to restart workers after changing settings.
+- Labels, help texts, page labels and options go through `__()`. Add `->thaana()` to text settings that take Dhivehi; `->translatable()` for a value per language.
+- In tests, use `Settings::fake([...])` or the `FakesSettings` trait (`setFakeSetting()`); don't mock the facade.
+
+## Docs
+
+- [Introduction](docs/intro.md): what the package does
+- [Requirements](docs/requirements.md): PHP, Laravel, the Javaabu packages and the optional ones
+- [Installation & Setup](docs/installation-and-setup.md): installing, defining a page, the routes, Blade and Inertia, publishing
+- [Upgrading from v1](docs/upgrading.md): what still works, moving values from anlutro/l4-settings, replacing the Setting facade
+- [AI assistants](docs/ai-assistants.md): Laravel Boost and these docs
+- [Defining settings](docs/basic-usage/defining-settings.md): Setting, fields, defaults, casts, encrypted settings, pages, sections, inline pages, settings without a page
+- [Reading and writing](docs/basic-usage/reading-and-writing.md): settings(), typed getters, set and forget, the SettingsUpdated event, file and model settings
+- [Settings pages](docs/basic-usage/settings-pages.md): Route::settings() and its options, what the page does, Blade, Inertia React, SettingsForm in your own controllers
+- [Testing](docs/basic-usage/testing.md): Settings::fake(), FakesSettings, testing pages and forms
+- [Configuration](docs/advanced-usage/configuration.md): every config option
+- [Stores and caching](docs/advanced-usage/stores-and-caching.md): database, json and array stores, custom stores, how the cache and versions work
+- [Queue workers and Octane](docs/advanced-usage/queue-workers-and-octane.md): how workers pick up changes, turning it off, testing it
+- [Permissions and policies](docs/advanced-usage/permissions-and-policies.md): view_settings, edit_settings, per-page permissions, the policy, guards
+- [Overriding controllers and views](docs/advanced-usage/overriding-controllers-and-views.md): the controller and its hooks, the Blade view, the React page
+- [Activity log](docs/advanced-usage/activity-log.md): logging changes with spatie/laravel-activitylog
+- [Translatable settings](docs/advanced-usage/translatable-settings.md): a value per language with javaabu/translatable
+- [Dhivehi and RTL](docs/advanced-usage/dhivehi-and-rtl.md): strings, RTL, Thaana, translations to review
+- [API reference](docs/advanced-usage/api-reference.md): every helper, class, method and JavaScript export
+- [Questions and Security](docs/questions-and-security.md): where to get help
+- [Changelog](docs/changelog.md): where changes are listed
+- [About Us](docs/about-us.md): Javaabu
+- [Contributing to the docs](docs/contributing-to-docs.md): how the docs are built

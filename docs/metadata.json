@@ -1,5 +1,5 @@
 {
     "name": "Settings",
-    "description": "Laravel helper functions for use in everywhere on a project",
-    "version": "1"
+    "description": "Settings for Laravel defined once with javaabu/stencil: typed access, automatic settings pages in Blade or Inertia React, and queue workers that pick up changes",
+    "version": "2"
 }
