@@ -34,6 +34,45 @@ jobs:
             -   name: Check code style
                 run: vendor/bin/pint --test
 
+    js:
+        runs-on: ubuntu-latest
+
+        name: React pages (typecheck, tests)
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v5
+
+            # The pages import stencil's React renderer from vendor/javaabu/stencil
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.4
+                    coverage: none
+
+            -   name: Install Composer dependencies
+                run: composer update --prefer-dist --no-interaction --no-progress
+
+            -   name: Setup pnpm
+                uses: pnpm/action-setup@v4
+
+            -   name: Setup Node
+                uses: actions/setup-node@v5
+                with:
+                    node-version: 22
+                    package-manager-cache: false
+
+            # The default store is inside a node_modules folder, which breaks the declaration
+            # build of @javaabu/forms (installed from git and built on install)
+            -   name: Install dependencies
+                run: pnpm install --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
+
+            -   name: Typecheck
+                run: pnpm typecheck
+
+            -   name: Test
+                run: pnpm test
+
     without-optional:
         runs-on: ubuntu-latest
 

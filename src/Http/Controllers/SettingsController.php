@@ -123,6 +123,11 @@ class SettingsController extends Controller
             'page' => $this->pageData($request, $page),
             'pages' => $this->navigation($request, $page),
             'status' => $request->session()->get('status'),
+            'strings' => [
+                'title' => __('Settings'),
+                'read_only' => __('You can view these settings but not change them.'),
+                'pages' => __('Settings pages'),
+            ],
             'layout' => config('settings.layout', 'layouts.app'),
             'layout_section' => config('settings.layout_section', 'content'),
         ];

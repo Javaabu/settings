@@ -1,0 +1,174 @@
+{
+    "form": {
+        "stencil": 1,
+        "id": "settings-general",
+        "action": "http://localhost/settings/general",
+        "method": "PATCH",
+        "files": true,
+        "operation": "edit",
+        "submit": "Save settings",
+        "state": {
+            "site_name": "ދިވެހިރާއްޖެ",
+            "per_page": 20,
+            "registration_open": true,
+            "theme": "light",
+            "seo_description": null,
+            "seo_keywords": [
+                "laravel",
+                "javaabu"
+            ],
+            "logo": "http://localhost/img/logo.png"
+        },
+        "live": null,
+        "components": [
+            {
+                "type": "text",
+                "key": "site_name",
+                "name": "site_name",
+                "component": "Text",
+                "props": {
+                    "label": "Site name",
+                    "required": true,
+                    "thaana": true,
+                    "maxLength": 255
+                }
+            },
+            {
+                "type": "text",
+                "key": "per_page",
+                "name": "per_page",
+                "component": "Number",
+                "props": {
+                    "label": "Items per page",
+                    "required": true,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1
+                }
+            },
+            {
+                "type": "checkbox",
+                "key": "registration_open",
+                "name": "registration_open",
+                "component": "Checkbox",
+                "props": {
+                    "label": "Registration is open"
+                }
+            },
+            {
+                "type": "select",
+                "key": "theme",
+                "name": "theme",
+                "component": "Select",
+                "props": {
+                    "label": "Theme",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "light",
+                            "label": "Light"
+                        },
+                        {
+                            "value": "dark",
+                            "label": "Dark"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "section",
+                "key": "section-4",
+                "props": {
+                    "heading": "Search engines",
+                    "description": "How the site appears in search results",
+                    "columns": {
+                        "default": 1,
+                        "md": 2
+                    }
+                },
+                "children": [
+                    {
+                        "type": "textarea",
+                        "key": "seo_description",
+                        "name": "seo_description",
+                        "component": "Textarea",
+                        "props": {
+                            "label": "Description",
+                            "thaana": true
+                        }
+                    },
+                    {
+                        "type": "checkbox-list",
+                        "key": "seo_keywords",
+                        "name": "seo_keywords[]",
+                        "component": "Checkbox",
+                        "props": {
+                            "label": "Seo Keywords",
+                            "options": [
+                                {
+                                    "value": "laravel",
+                                    "label": "Laravel"
+                                },
+                                {
+                                    "value": "javaabu",
+                                    "label": "Javaabu"
+                                },
+                                {
+                                    "value": "dhivehi",
+                                    "label": "ދިވެހި"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "image",
+                "key": "logo",
+                "name": "logo",
+                "component": "Image",
+                "props": {
+                    "label": "Logo",
+                    "type": "image",
+                    "default": "http://localhost/img/logo.png"
+                }
+            }
+        ]
+    },
+    "page": {
+        "key": "general",
+        "label": "General",
+        "description": "The name and look of the site",
+        "icon": null,
+        "url": "http://localhost/settings/general",
+        "can_update": true
+    },
+    "pages": [
+        {
+            "key": "general",
+            "label": "General",
+            "description": "The name and look of the site",
+            "icon": null,
+            "url": "http://localhost/settings/general",
+            "can_update": true,
+            "active": true
+        },
+        {
+            "key": "mail",
+            "label": "Mail",
+            "description": null,
+            "icon": null,
+            "url": "http://localhost/settings/mail",
+            "can_update": true,
+            "active": false
+        }
+    ],
+    "status": null,
+    "strings": {
+        "title": "Settings",
+        "read_only": "You can view these settings but not change them.",
+        "pages": "Settings pages"
+    },
+    "layout": "layouts.app",
+    "layout_section": "content"
+}

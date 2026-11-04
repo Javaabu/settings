@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Javaabu\Manifest\Concerns\RegistersAssets;
+use Javaabu\Manifest\Package;
 use Javaabu\Permissions\Permissions;
 use Javaabu\Settings\Commands\ImportV1SettingsCommand;
 use Javaabu\Settings\Definitions\SettingsPage;
@@ -19,6 +21,8 @@ use Javaabu\Settings\Stores\StoreManager;
 
 class SettingsServiceProvider extends ServiceProvider
 {
+    use RegistersAssets;
+
     /** The Octane events after which a worker checks for changed settings */
     public const array OCTANE_EVENTS = [
         'Laravel\Octane\Events\RequestReceived',
@@ -41,6 +45,7 @@ class SettingsServiceProvider extends ServiceProvider
         $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'settings');
 
+        $this->registerFrontendAssets();
         $this->registerPages();
         $this->registerRouteMacros();
         $this->registerPermissions();
@@ -58,6 +63,27 @@ class SettingsServiceProvider extends ServiceProvider
                 ImportV1SettingsCommand::class,
             ]);
         }
+    }
+
+    /**
+     * The Inertia page (settings::Settings/Edit) and the components apps can
+     * import as @javaabu/settings
+     */
+    protected function registerFrontendAssets(): void
+    {
+        $this->registerAssets('settings', __DIR__ . '/../resources', function (Package $package) {
+            $package
+                ->js()
+                ->pages()
+                ->npm([
+                    '@javaabu/forms' => 'github:Javaabu/react-forms#next-gen',
+                    '@javaabu/onu' => '^0.2.1',
+                ], peer_dependencies: [
+                    'react' => '^19.0',
+                    'react-dom' => '^19.0',
+                    '@inertiajs/react' => '^2.0 || ^3.0',
+                ]);
+        });
     }
 
     protected function registerPages(): void
