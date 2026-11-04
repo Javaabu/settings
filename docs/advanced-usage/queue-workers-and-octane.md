@@ -7,11 +7,11 @@ Queue workers and Octane boot the app once and keep it in memory, so a process t
 
 # How it works
 
-Every change puts a new version in the cache. Before each job, a worker compares the version it loaded with the cache's version, and reloads the settings when they differ (a `Queue::before()` callback). Octane does the same before each request, task and tick. The check is one cache read.
+Every change puts a new version in the cache. Before each job, a worker compares the version it loaded with the cache's version, and reloads the settings when they differ (a `JobProcessing` listener, which is what `Queue::before()` registers). Octane does the same before each request, task and tick. The check is one cache read.
 
 ```php
 // What the service provider does
-Queue::before(fn () => Settings::refreshIfStale());
+Event::listen(JobProcessing::class, fn () => Settings::refreshIfStale());
 Event::listen([RequestReceived::class, TaskReceived::class, TickReceived::class], fn () => Settings::refreshIfStale());
 ```
 

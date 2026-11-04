@@ -2,8 +2,8 @@
 
 namespace Javaabu\Settings;
 
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -143,14 +143,15 @@ class SettingsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Queue workers and Octane reload settings another process changed
+     * Queue workers (before each job, as Queue::before() would) and Octane
+     * reload settings another process changed
      */
     protected function registerRefreshing(): void
     {
         $refresh = fn () => $this->app->make(SettingsRepository::class)->refreshIfStale();
 
         if (config('settings.refresh.queue', true)) {
-            Queue::before($refresh);
+            Event::listen(JobProcessing::class, $refresh);
         }
 
         if (config('settings.refresh.octane', true)) {
