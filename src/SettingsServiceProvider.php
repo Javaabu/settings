@@ -4,11 +4,17 @@ namespace Javaabu\Settings;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Javaabu\Permissions\Permissions;
 use Javaabu\Settings\Commands\ImportV1SettingsCommand;
+use Javaabu\Settings\Definitions\SettingsPage;
 use Javaabu\Settings\Events\SettingsUpdated;
 use Javaabu\Settings\Facades\Settings;
 use Javaabu\Settings\Listeners\LogSettingsUpdate;
+use Javaabu\Settings\Policies\SettingsPolicy;
+use Javaabu\Settings\Routing\SettingsRoutes;
 use Javaabu\Settings\Stores\StoreManager;
 
 class SettingsServiceProvider extends ServiceProvider
@@ -33,8 +39,11 @@ class SettingsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'settings');
 
         $this->registerPages();
+        $this->registerRouteMacros();
+        $this->registerPermissions();
         $this->registerRefreshing();
         $this->registerActivityLog();
 
@@ -57,6 +66,53 @@ class SettingsServiceProvider extends ServiceProvider
 
         if ($pages !== []) {
             $this->app->make(SettingsRegistry::class)->pages($pages);
+        }
+    }
+
+    protected function registerRouteMacros(): void
+    {
+        Route::macro('settings', function (array $options = []) {
+            SettingsRoutes::register($this, $options);
+        });
+    }
+
+    /**
+     * view_settings and edit_settings, the permissions of pages that have their
+     * own, and the default policy, which the app can override
+     */
+    protected function registerPermissions(): void
+    {
+        if (! config('settings.register_permissions', true)) {
+            return;
+        }
+
+        Permissions::register('settings', [
+            SettingsPolicy::VIEW => 'View settings',
+            SettingsPolicy::EDIT => 'Edit settings',
+        ], label: 'Settings');
+
+        Permissions::policy(SettingsPage::class, config('settings.policy', SettingsPolicy::class));
+
+        $this->app->booted(fn () => $this->registerPagePermissions());
+    }
+
+    /**
+     * Pages registered by the app may need their own permission
+     */
+    protected function registerPagePermissions(): void
+    {
+        $group = Permissions::group('settings');
+
+        foreach ($this->app->make(SettingsRegistry::class)->all() as $page) {
+            $permission = $page->getPermission();
+
+            if ($permission === null || Permissions::has($permission)) {
+                continue;
+            }
+
+            $label = Str::headline($page->getKey());
+
+            $group?->add([$permission => "Edit {$label} settings"]);
         }
     }
 
@@ -102,6 +158,10 @@ class SettingsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../lang' => lang_path('vendor/settings'),
         ], 'settings-translations');
+
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/settings'),
+        ], 'settings-views');
 
         $this->publishes([
             __DIR__ . '/../config/defaults.php' => config_path('defaults.php'),

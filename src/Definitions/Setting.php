@@ -112,6 +112,10 @@ class Setting
             $field->disk(config('settings.disk'))->directory(config('settings.directory', 'settings'));
         }
 
+        if ($this->is_encrypted) {
+            $field->help(__('Leave blank to keep the current value.'));
+        }
+
         foreach ($this->field_calls as [$method, $arguments]) {
             $field->{$method}(...$arguments);
         }
