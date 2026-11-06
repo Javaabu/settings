@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Javaabu\Manifest\Concerns\RegistersAssets;
+use Javaabu\Manifest\Enums\NpmScopes;
 use Javaabu\Manifest\Package;
 use Javaabu\Permissions\Permissions;
 use Javaabu\Settings\Commands\ImportV1SettingsCommand;
@@ -67,7 +68,8 @@ class SettingsServiceProvider extends ServiceProvider
 
     /**
      * The Inertia page (settings::Settings/Edit) and the components apps can
-     * import as @javaabu/settings
+     * import as @javaabu/settings. The package registers no Blade assets, so
+     * every npm dependency is for pages: Blade apps aren't asked for React.
      */
     protected function registerFrontendAssets(): void
     {
@@ -82,7 +84,7 @@ class SettingsServiceProvider extends ServiceProvider
                     'react' => '^19.0',
                     'react-dom' => '^19.0',
                     '@inertiajs/react' => '^2.0 || ^3.0',
-                ]);
+                ], for: NpmScopes::PAGES);
         });
     }
 

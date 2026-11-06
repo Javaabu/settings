@@ -10,6 +10,7 @@ All notable changes will be documented in this file
 - Values are cached under a version; queue workers (`Queue::before`) and Octane reload changed settings without a restart
 - `Route::settings()`: a form, validation, saving and a page for every settings page, in Blade (javaabu/forms) or Inertia React (@javaabu/forms through javaabu/manifest), with JSON responses and live fields
 - `SettingsPolicy` and `view_settings` / `edit_settings` (and per-page) permissions through javaabu/permissions; any guard and user model; overridable controller and policy
+- The React page's npm packages are registered for pages only (manifest `for: 'pages'`), so Blade apps aren't asked to install React
 - Optional translatable settings through javaabu/translatable v3
 - Optional activity log through spatie/laravel-activitylog (no longer a dependency); encrypted values aren't logged
 - Dhivehi translations and RTL pages

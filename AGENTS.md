@@ -30,6 +30,7 @@
 - Keep the v1 helpers and `FakesSettings` working; document any break in `docs/upgrading.md`.
 - Encrypted values must never reach the browser or the activity log.
 - Every user-facing string goes through `__()` with an English key, and gets a line in `lang/en.json` and `lang/dv.json` (`TranslationsTest` checks). Use Thaana in tests of user-facing behaviour. List uncertain translations in `docs/advanced-usage/dhivehi-and-rtl.md`. Views use logical CSS only (`ms-`, `pe-`, `start-`), never `left`/`right`.
+- npm dependencies of `resources/js` go in manifest's `npm(..., for: 'pages')`: the package has no Blade assets, so Blade apps must not be asked for them (`FrontendAssetsTest` checks).
 - When the Inertia props change, regenerate the JS fixture: `UPDATE_FIXTURES=1 vendor/bin/phpunit --filter InertiaPagesTest`.
 - Every change needs tests, docs (linked from `llms.txt`), the Boost skill if it changes how the package is used, and a line in `CHANGELOG.md`.
 - Work on the `next-gen` branch; don't commit to `main`.

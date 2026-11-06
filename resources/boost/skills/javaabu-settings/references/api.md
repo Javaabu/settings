@@ -62,6 +62,10 @@ Page props (Blade variables and Inertia props of `settings::Settings/Edit`): `fo
 
 `SettingsForm::forPage('general')` is a stencil form class: `->action(...)`, `->saveSettings($request, $user)`, `->currentValues()`, `->assertable()`.
 
+## npm packages
+
+Only the Inertia React page needs npm packages (`@javaabu/forms`, `@javaabu/onu`, React 19, `@inertiajs/react`). They're registered with manifest `for: 'pages'`, so `php artisan manifest:check` asks Blade-only apps for none of them; Inertia apps install what it lists.
+
 ## Permissions and policy
 
 `view_settings` (see every page, read-only), `edit_settings` (edit pages without their own permission), and each page's `$permission`. `SettingsPolicy` on `SettingsPage`: `viewAny`, `view`, `update`. Override with `config('permissions.policies')`, `Gate::policy(SettingsPage::class, ...)` or `config('settings.policy')`.

@@ -101,7 +101,7 @@ composer require inertiajs/inertia-laravel
 'views' => 'inertia',
 ```
 
-The page is `settings::Settings/Edit`, resolved by manifest's Vite plugin. Install the npm packages the page needs (`php artisan manifest:check` lists them), and wrap it in your layout where you resolve pages.
+The page is `settings::Settings/Edit`, resolved by manifest's Vite plugin. Install the npm packages the page needs (`php artisan manifest:check` lists them once `@inertiajs/react` is in your `package.json`; `--scope=pages` checks them before), and wrap it in your layout where you resolve pages. Blade apps don't need these packages.
 
 # Publishing
 
