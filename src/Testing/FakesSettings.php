@@ -2,39 +2,41 @@
 
 namespace Javaabu\Settings\Testing;
 
-use anlutro\LaravelSettings\Facades\Setting;
+use Javaabu\Settings\Facades\Settings;
 
+/**
+ * Fake settings and defaults in tests. Values are kept in memory, so nothing is
+ * written to the store or the cache.
+ */
 trait FakesSettings
 {
-    protected array $fake_settings = [];
     /**
-     * Fake a setting default
+     * Fake the default value of a setting
      */
-    protected function setFakeDefaultSetting(string $setting, $value)
+    protected function setFakeDefaultSetting(string $setting, mixed $value): void
     {
-        $this->app['config']->set('defaults.' . $setting, $value);
+        $this->app['config']->set("defaults.{$setting}", $value);
+
+        Settings::fakeDefault($setting, $value);
     }
 
     /**
-     * Fake a setting
+     * Fake the value of a setting, and its default ($default, null when not given)
      */
-    protected function setFakeSetting(string $setting, $value, $default = null)
+    protected function setFakeSetting(string $setting, mixed $value, mixed $default = null): void
     {
-        $this->app['config']->set('defaults.' . $setting, $default);
+        $this->setFakeDefaultSetting($setting, $default);
 
-        // mock only once
-        if (empty($this->fake_settings)) {
-            Setting::shouldReceive('get')
-                ->andReturnUsing(function ($key) {
-                    if (array_key_exists($key, $this->fake_settings)) {
-                        return $this->fake_settings[$key];
-                    }
+        Settings::fake([$setting => $value]);
+    }
 
-                    return default_setting($key);
-                });
-        }
-
-        // register the fake setting
-        $this->fake_settings[$setting] = $value;
+    /**
+     * Fake several settings
+     *
+     * @param  array<string, mixed>  $settings
+     */
+    protected function setFakeSettings(array $settings): void
+    {
+        Settings::fake($settings);
     }
 }

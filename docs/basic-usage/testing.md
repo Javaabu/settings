@@ -1,59 +1,83 @@
 ---
 title: Testing
-sidebar_position: 3
+sidebar_position: 4
 ---
 
-:::info
+# Faking settings
 
-The `FakesSettings` trait is included by default in the [`javaabu/helpers`](https://github.com/Javaabu/helpers) `TestCase` class. So you don't need to separately include this trait if you are already extending that class for your tests. 
-
-:::
-
-This package provides a trait called `FakesSettings` for faking settings and default values. 
-
-The trait provides the following methods:
-
-- **`setFakeDefaultSetting(string $setting, $value)`**: Fake a setting default to a given value
-- **`setFakeSetting(string $setting, $value, $default = null)`**: Fake a setting to a given value and optionally set a default to the given setting. If a default is not provided, it would be set to `null`. Note that when you need to set both a default and a setting to the same setting key, you should call this method with a default instead of calling the `setFakeDefaultSetting` method separately.
-
-When faking settings, for settings that are not faked, it will return the default value for those settings.
-
-You can use the trait in your tests like so.
+`Settings::fake()` keeps values in memory for the rest of the test: nothing is read from or written to the store or the cache.
 
 ```php
-...
-use Javaabu\Settings\Testing\FakesSettings;
+use Javaabu\Settings\Facades\Settings;
 
-/** @test */
-public function it_can_fake_a_default_setting()
+#[Test]
+public function it_closes_registration(): void
 {
-    // faking a default setting
-    
-    $this->setFakeDefaultSetting('daily_limit', 20);
+    Settings::fake(['registration_open' => false]);
 
-    $this->assertEquals(20, default_setting('daily_limit'));
+    $this->get('/register')->assertForbidden();
 }
-
-/** @test */
-public function it_can_fake_a_setting()
-{
-    // faking a setting value
-    
-    $this->setFakeSetting('app_name', 'fake name');
-
-    $this->assertEquals('fake name', get_setting('app_name'));
-}
-
-/** @test */
-public function it_can_fake_a_setting_with_a_default()
-{
-    // faking a setting value with a default
-    
-    $this->setFakeSetting('app_name', 'fake name', 'default name');
-
-    $this->assertEquals('default name', default_setting('app_name'));
-    $this->assertEquals('fake name', get_setting('app_name'));
-}
-...
 ```
 
+Defaults still come from the definitions. Fake a default with `Settings::fakeDefault('per_page', 5)`, and go back to the real store with `Settings::stopFaking()`.
+
+# The FakesSettings trait
+
+Kept from v1, for tests that use it:
+
+```php
+use Javaabu\Settings\Testing\FakesSettings;
+
+class InvoicesTest extends TestCase
+{
+    use FakesSettings;
+
+    #[Test]
+    public function it_charges_vat(): void
+    {
+        $this->setFakeSetting('vat_rate', 8);              // the value; its default becomes null
+        $this->setFakeSetting('currency', 'MVR', 'USD');    // the value and its default
+        $this->setFakeDefaultSetting('per_page', 5);        // only the default
+        $this->setFakeSettings(['site_name' => 'ދިވެހިރާއްޖެ']); // several values
+
+        // ...
+    }
+}
+```
+
+The trait is a thin layer over `Settings::fake()` and `Settings::fakeDefault()`.
+
+# Testing pages
+
+Test settings pages through their routes, as users use them:
+
+```php
+#[Test]
+public function admins_can_change_the_site_name(): void
+{
+    $admin = User::factory()->create();
+    $admin->givePermissionTo('edit_settings');
+
+    $this->actingAs($admin)
+        ->patch(route('settings.update', 'general'), ['site_name' => 'ދިވެހިރާއްޖެ', 'per_page' => 20])
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('settings.edit', 'general'));
+
+    $this->assertEquals('ދިވެހިރާއްޖެ', settings('site_name'));
+}
+```
+
+Or test a page's form without HTTP, with stencil's `AssertableForm`:
+
+```php
+use Javaabu\Settings\Forms\SettingsForm;
+
+SettingsForm::forPage('general')
+    ->assertable()
+    ->assertHasField('site_name')
+    ->assertState('site_name', settings('site_name'))
+    ->assertFieldRequired('site_name')
+    ->assertInvalid(['site_name' => ''], 'site_name');
+```
+
+Long-running processes: [Queue workers and Octane](../advanced-usage/queue-workers-and-octane.md#testing) shows how to test a worker across a change.

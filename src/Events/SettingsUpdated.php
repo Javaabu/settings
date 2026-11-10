@@ -2,41 +2,54 @@
 
 namespace Javaabu\Settings\Events;
 
-use App\Models\User;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
+/**
+ * Settings changed. Holds the values of the changed keys before and after.
+ */
 class SettingsUpdated
 {
     use Dispatchable;
     use SerializesModels;
 
     /**
-     * @var User
+     * @param  array<string, mixed>  $old_settings
+     * @param  array<string, mixed>  $new_settings
      */
-    public $causer;
+    public function __construct(
+        public array $old_settings,
+        public array $new_settings,
+        public ?Model $causer = null,
+    ) {}
 
     /**
-     * @var array
-     */
-    public $old_settings;
-
-    /**
-     * @var array
-     */
-    public $new_settings;
-
-    /**
-     * Create a new event instance.
+     * The keys whose value changed, with their new values
      *
-     * @param array $old_settings
-     * @param array $new_settings
-     * @param User|null $causer
+     * @return array<string, mixed>
      */
-    public function __construct($old_settings, $new_settings, $causer = null)
+    public function changes(): array
     {
-        $this->old_settings = $old_settings;
-        $this->new_settings = $new_settings;
-        $this->causer = $causer;
+        $changes = [];
+
+        foreach ($this->new_settings as $key => $value) {
+            if (($this->old_settings[$key] ?? null) != $value) {
+                $changes[$key] = $value;
+            }
+        }
+
+        foreach ($this->old_settings as $key => $value) {
+            if (! array_key_exists($key, $this->new_settings) && $value !== null) {
+                $changes[$key] = null;
+            }
+        }
+
+        return $changes;
+    }
+
+    public function changed(string $key): bool
+    {
+        return array_key_exists($key, $this->changes());
     }
 }
